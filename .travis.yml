@@ -26,17 +26,24 @@ before_install:
       sleep 3;
     fi
 
-install:
-  # beheve is a dev dependeny, so not in requirements.txt.
-  - pip install behave
-  - pip install -r ./requirements.txt
-  # codecov is a code coverage tool.
-  - pip install codecov
   - cd ./vscode-client
   - npm install
   - mkdir ./out
   - npm run vscode:prepublish
   - cd - > /dev/null
+
+  - printf '%s\n'
+           "$(cat test-requirements.txt requirements.txt)"
+           > requirements.txt
+
+jobs:
+  include:
+    - python: 3.6
+      stage: moban
+      before_install: false
+      install: pip install moban
+      script: .ci/check_moban.sh
+      after_success: false
 
 script:
   - >
